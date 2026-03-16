@@ -1,0 +1,18 @@
+file_format: "1"
+id: lily58_donge
+name: Lily58_dongle
+type: shield
+url: https://pandakb.com
+requires: [nice!nano]
+exposes: [i2c_oled]
+features:
+  - keys
+  - display
+  - studio
+  - dongle
+  - underglow
+  - encoder
+siblings:
+  - Lily58_dongle_central
+  - Lily58_dongle_left
+  - Lily58_dongle_right
