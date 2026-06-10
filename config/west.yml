@@ -20,7 +20,7 @@ manifest:
     - name: penguinchat
       url-base: https://github.com/penguinchat
     - name: megacopi
-    url-base: https://github.com/Megacopi
+      url-base: https://github.com/Megacopi
   projects:
     - name: zmk
       remote: zmkfirmware
