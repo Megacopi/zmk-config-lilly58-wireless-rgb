@@ -1,12 +1,24 @@
 if SHIELD_NICE_VIEW_CUSTOM
 
-config SHIELD_NICE_VIEW_CUSTOM
-    default y
-
 config ZMK_DISPLAY
     default y
 
 config ZMK_WPM
+    default y
+
+config ZMK_DISPLAY_STATUS_SCREEN_CUSTOM
+    default y
+
+config LV_USE_LABEL
+    default y
+
+config LV_USE_CANVAS
+    default y
+
+config LV_FONT_MONTSERRAT_26
+    default y
+
+config LV_FONT_MONTSERRAT_16
     default y
 
 endif
