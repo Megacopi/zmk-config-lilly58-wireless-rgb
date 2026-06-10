@@ -19,8 +19,8 @@ manifest:
   #    url-base: https://github.com/infely
     - name: penguinchat
       url-base: https://github.com/penguinchat
-    - name: megacopi
-      url-base: https://github.com/Megacopi
+  #  - name: megacopi
+  #    url-base: https://github.com/Megacopi
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -51,8 +51,8 @@ manifest:
     - name: zmk-for-PandaKB.com-
       remote: penguinchat
       revision: PandaKB_Lily58
-    - name: zmk-nice-view-megacopi
-      remote: megacopi
-      revision: main
+  #  - name: zmk-nice-view-megacopi
+  #    remote: megacopi
+  #    revision: main
   self:
     path: config
