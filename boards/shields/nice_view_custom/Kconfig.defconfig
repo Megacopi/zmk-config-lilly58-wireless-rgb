@@ -6,9 +6,6 @@ config ZMK_DISPLAY
 config ZMK_WPM
     default y
 
-config ZMK_DISPLAY_STATUS_SCREEN_CUSTOM
-    default y
-
 config LV_USE_LABEL
     default y
 
