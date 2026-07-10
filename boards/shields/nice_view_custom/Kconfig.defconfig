@@ -3,9 +3,6 @@ if SHIELD_NICE_VIEW_CUSTOM
 config ZMK_DISPLAY
     default y
 
-config ZMK_WPM
-    default y
-
 config LV_USE_LABEL
     default y
 

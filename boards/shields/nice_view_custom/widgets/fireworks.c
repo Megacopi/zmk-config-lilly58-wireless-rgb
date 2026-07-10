@@ -4,7 +4,8 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/display.h>
-#include <zmk/wpm.h>
+#include <zmk/event_manager.h>
+#include <zmk/events/position_state_changed.h>
 #include <lvgl.h>
 #include <string.h>
 
@@ -13,6 +14,13 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #define MAX_ROCKETS     6
 #define MAX_PARTICLES   32
 #define TICK_MS         50
+
+// zmk_wpm_get_state() only works on the split central (it needs the fully
+// resolved keycode stream); a peripheral only sees its own raw key
+// positions. So instead of WPM we track local key-down events in a rolling
+// 1s window as a stand-in "how fast is this half being typed on" signal.
+#define ACTIVITY_WINDOW_MS      1000
+#define ACTIVITY_FAST_THRESHOLD 3
 
 // --- Rocket ---
 typedef struct {
@@ -42,6 +50,34 @@ static uint32_t my_rand(void) {
     return rng_state;
 }
 
+static uint16_t key_events_this_window = 0;
+static uint16_t key_events_last_window = 0;
+static int64_t window_start_ms = 0;
+
+static bool is_typing_fast(void) {
+    return key_events_last_window >= ACTIVITY_FAST_THRESHOLD;
+}
+
+static void activity_tick(void) {
+    int64_t now = k_uptime_get();
+    if (now - window_start_ms >= ACTIVITY_WINDOW_MS) {
+        key_events_last_window = key_events_this_window;
+        key_events_this_window = 0;
+        window_start_ms = now;
+    }
+}
+
+static int fireworks_position_listener(const zmk_event_t *eh) {
+    const struct zmk_position_state_changed *ev = as_zmk_position_state_changed(eh);
+    if (ev && ev->state) {
+        key_events_this_window++;
+    }
+    return ZMK_EV_EVENT_BUBBLE;
+}
+
+ZMK_LISTENER(fireworks_activity, fireworks_position_listener);
+ZMK_SUBSCRIPTION(fireworks_activity, zmk_position_state_changed);
+
 static void spawn_rocket(void) {
     // Find free slot
     for (int i = 0; i < MAX_ROCKETS; i++) {
@@ -50,8 +86,7 @@ static void spawn_rocket(void) {
             rockets[i].x = 8 + (my_rand() % (SCREEN_W - 16));
             rockets[i].y = SCREEN_H - 1;
             // Speed: idle=1..2, typing=3..5
-            uint8_t wpm = zmk_wpm_get_state();
-            int speed = (wpm > 20) ? (3 + my_rand() % 3) : (1 + my_rand() % 2);
+            int speed = is_typing_fast() ? (3 + my_rand() % 3) : (1 + my_rand() % 2);
             rockets[i].vy = -speed;
             rockets[i].trail = 0;
             return;
@@ -60,8 +95,7 @@ static void spawn_rocket(void) {
 }
 
 static void explode(int16_t x, int16_t y) {
-    uint8_t wpm = zmk_wpm_get_state();
-    int count = (wpm > 20) ? 20 : 10;
+    int count = is_typing_fast() ? 20 : 10;
     int spawned = 0;
     for (int i = 0; i < MAX_PARTICLES && spawned < count; i++) {
         if (!particles[i].active) {
@@ -110,12 +144,13 @@ static void draw_frame(void) {
 }
 
 static void fireworks_timer_cb(lv_timer_t *timer) {
-    uint8_t wpm = zmk_wpm_get_state();
+    activity_tick();
+    bool fast = is_typing_fast();
 
     // Spawn logic: idle = ~every 4 ticks, typing = ~every 1-2 ticks
     uint32_t r = my_rand() % 8;
     bool should_spawn;
-    if (wpm > 20) {
+    if (fast) {
         should_spawn = (r < 5);  // ~60% chance per tick
     } else {
         should_spawn = (r < 2);  // ~25% chance per tick
@@ -125,7 +160,7 @@ static void fireworks_timer_cb(lv_timer_t *timer) {
     int active = 0;
     for (int i = 0; i < MAX_ROCKETS; i++) if (rockets[i].active) active++;
 
-    int max_active = (wpm > 20) ? 5 : 2;
+    int max_active = fast ? 5 : 2;
     if (should_spawn && active < max_active) {
         spawn_rocket();
     }
