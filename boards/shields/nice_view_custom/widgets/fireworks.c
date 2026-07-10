@@ -41,7 +41,7 @@ typedef struct {
 static Rocket rockets[MAX_ROCKETS];
 static Particle particles[MAX_PARTICLES];
 static lv_obj_t *canvas;
-static uint16_t cbuf[SCREEN_W * SCREEN_H]; // LV_COLOR_FORMAT_RGB565, 2 bytes/px
+static lv_color_t cbuf[SCREEN_W * SCREEN_H];
 
 // Simple LCG pseudo-random (no stdlib rand needed)
 static uint32_t rng_state = 12345;
@@ -113,34 +113,33 @@ static void explode(int16_t x, int16_t y) {
     }
 }
 
-// LVGL v9 dropped lv_canvas_draw_rect(); set_px in a small loop is plenty
-// for these 1-2px dots.
-static void draw_dot(int16_t x, int16_t y, int16_t w, int16_t h) {
-    for (int16_t dy = 0; dy < h; dy++) {
-        for (int16_t dx = 0; dx < w; dx++) {
-            int16_t px = x + dx;
-            int16_t py = y + dy;
-            if (px >= 0 && px < SCREEN_W && py >= 0 && py < SCREEN_H) {
-                lv_canvas_set_px(canvas, px, py, lv_color_white(), LV_OPA_COVER);
-            }
-        }
-    }
-}
-
 static void draw_frame(void) {
     // Clear canvas
     lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
 
+    lv_draw_rect_dsc_t dot;
+    lv_draw_rect_dsc_init(&dot);
+    dot.bg_color = lv_color_white();
+    dot.bg_opa = LV_OPA_COVER;
+    dot.radius = 0;
+
     // Draw rockets
     for (int i = 0; i < MAX_ROCKETS; i++) {
         if (!rockets[i].active) continue;
-        draw_dot(rockets[i].x, rockets[i].y, 2, 2);
+        if (rockets[i].x >= 0 && rockets[i].x < SCREEN_W &&
+            rockets[i].y >= 0 && rockets[i].y < SCREEN_H) {
+            lv_canvas_draw_rect(canvas, rockets[i].x, rockets[i].y, 2, 2, &dot);
+        }
     }
 
     // Draw particles
     for (int i = 0; i < MAX_PARTICLES; i++) {
         if (!particles[i].active) continue;
-        draw_dot(particles[i].x, particles[i].y, 1, 1);
+        int16_t px = particles[i].x;
+        int16_t py = particles[i].y;
+        if (px >= 0 && px < SCREEN_W && py >= 0 && py < SCREEN_H) {
+            lv_canvas_draw_rect(canvas, px, py, 1, 1, &dot);
+        }
     }
 }
 
@@ -199,7 +198,7 @@ lv_obj_t *zmk_widget_fireworks_obj(void) {
     memset(particles, 0, sizeof(particles));
 
     canvas = lv_canvas_create(lv_scr_act());
-    lv_canvas_set_buffer(canvas, cbuf, SCREEN_W, SCREEN_H, LV_COLOR_FORMAT_RGB565);
+    lv_canvas_set_buffer(canvas, cbuf, SCREEN_W, SCREEN_H, LV_IMG_CF_TRUE_COLOR);
     lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
     lv_obj_align(canvas, LV_ALIGN_TOP_LEFT, 0, 0);
 
