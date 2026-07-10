@@ -21,27 +21,11 @@ manifest:
       url-base: https://github.com/penguinchat
   #  - name: megacopi
   #    url-base: https://github.com/Megacopi
-    - name: badjeff
-      url-base: https://github.com/badjeff
-    - name: nrfconnect
-      url-base: https://github.com/nrfconnect
   projects:
     - name: zmk
       remote: zmkfirmware
       revision: 904c9aec8822d79149d42c8a9a77e8828eb08f5a # main @ 2026-07-08, pinned for reproducibility
       import: app/west.yml
-    - name: zmk-feature-split-esb
-      remote: badjeff
-      revision: be1a064043f98f2525e3adc9158047cb149d2124 # main @ 2026-07-09, pinned for reproducibility
-    - name: sdk-nrf
-      remote: badjeff
-      revision: 9b3d2623fdcd9c0fd0284f860beea924568c9826 # v3.1-branch+zmk-fixes @ 2026-07-09
-      path: nrf
-    - name: nrfxlib
-      remote: nrfconnect
-      revision: dfadf17305d8f000eda9aa74a5b9ff1c5647a23e # v3.1-branch
-      repo-path: sdk-nrfxlib
-      path: nrfxlib
   #additional module
   #  - name: hammerbeam-slideshow
   #    remote: gpeye

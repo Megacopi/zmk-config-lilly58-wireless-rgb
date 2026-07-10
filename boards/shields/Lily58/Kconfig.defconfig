@@ -3,6 +3,9 @@ if SHIELD_LILY58_L
 config ZMK_KEYBOARD_NAME
     default "Lily58"
 
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
 endif
 
 if SHIELD_LILY58_L || SHIELD_LILY58_R

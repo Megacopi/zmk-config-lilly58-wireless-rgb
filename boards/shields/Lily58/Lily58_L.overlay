@@ -28,12 +28,4 @@
     vbatt: vbatt {
         compatible = "zmk,battery-nrf-vddh";
     };
-
-    // Must be byte-identical to Lily58_R.overlay and Lily58_dongle.overlay.
-    esb_split {
-        compatible = "zmk,esb-split";
-        base-addr-0 = <0x65 0x2B 0xAE 0xB1>;
-        base-addr-1 = <0xC0 0xF5 0x91 0xDC>;
-        addr-prefix = <0x3E 0xCE 0xF4 0xA7 0x4D 0x64 0x6A 0xB0>;
-    };
 };
