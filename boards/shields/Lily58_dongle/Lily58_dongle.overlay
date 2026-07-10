@@ -31,6 +31,14 @@
     status = "disabled";
 };
 
+// layout_0 (from Lily58-layouts.dtsi, pulled in via Lily58.dtsi) points its
+// own "kscan" property at kscan0 for ZMK Studio live key-testing. With
+// kscan0 disabled that reference must be redirected or physical_layouts.c
+// fails to compile.
+&layout_0 {
+    kscan = <&mock_kscan>;
+};
+
 // No OLED/nice!view hardware on the dongle board.
 &pro_micro_i2c {
     status = "disabled";
