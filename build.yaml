@@ -1,7 +1,11 @@
 include:
   - board: nice_nano@2.0.0//zmk
-    shield: Lily58_L Nice_view_config nice_view nice_view_custom
+    shield: Lily58_dongle
     snippet: studio-rpc-usb-uart
+    artifact-name: Lily58_dongle
+
+  - board: nice_nano@2.0.0//zmk
+    shield: Lily58_L Nice_view_config nice_view nice_view_custom
     artifact-name: Lily58_left_nice_view
   - board: nice_nano@2.0.0//zmk
     shield: Lily58_R Nice_view_config nice_view nice_view_custom
