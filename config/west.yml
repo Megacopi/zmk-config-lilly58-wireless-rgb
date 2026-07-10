@@ -24,7 +24,7 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: 904c9aec8822d79149d42c8a9a77e8828eb08f5a # main @ 2026-07-08, pinned for reproducibility
+      revision: v0.3
       import: app/west.yml
   #additional module
   #  - name: hammerbeam-slideshow
