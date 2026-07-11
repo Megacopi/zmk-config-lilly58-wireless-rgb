@@ -11,13 +11,5 @@ include:
     shield: Lily58_R Nice_view_config nice_view nice_view_custom
     artifact-name: Lily58_right_nice_view
 
-  # DIAGNOSTIC ONLY: stock ZMK nice_view with its own built-in status
-  # screen, zero custom widget code. Flash this on Left to check whether
-  # the blank display is a hardware/wiring issue or something in our own
-  # nice_view_custom code. Remove once the real issue is found.
-  - board: nice_nano_v2
-    shield: Lily58_L Nice_view_config nice_view
-    artifact-name: Lily58_left_stock_nice_view
-
   - board: nice_nano_v2
     shield: settings_reset
