@@ -5,6 +5,8 @@
  *
  */
 
+#include <zephyr/kernel.h>
+
 // struct zmk_widget_status has different layouts (different cbuf counts) in
 // status.h (central) vs peripheral_status.h (peripheral) - the original
 // unconditional include only matched whichever widgets/*.c CMakeLists.txt
