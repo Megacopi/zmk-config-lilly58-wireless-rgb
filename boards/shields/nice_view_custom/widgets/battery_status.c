@@ -11,50 +11,40 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <lvgl.h>
 
 #include "util.h"
-#include "../assets/font.h"
 
 LV_IMG_DECLARE(bolt);
-LV_IMG_DECLARE(battery);
-LV_IMG_DECLARE(battery_mask);
 
 static lv_obj_t *canvas;
 static lv_color_t cbuf[CANVAS_SIZE * CANVAS_SIZE];
 static struct status_state state;
 
+// Simple rectangle-drawn battery icon + percentage, ported from
+// GPeye/hammerbeam-slideshow's widgets/util.c draw_battery(), which is
+// confirmed working on this exact PandaKB Lily58 nice!view hardware.
 static void draw_battery(void) {
     draw_background(canvas);
 
-    lv_draw_img_dsc_t img_dsc;
-    lv_draw_img_dsc_init(&img_dsc);
-    lv_draw_rect_dsc_t rect_dsc;
-    init_rect_dsc(&rect_dsc, LVGL_FOREGROUND);
-    lv_draw_label_dsc_t outline_dsc;
-    init_label_dsc(&outline_dsc, LVGL_BACKGROUND, &font, LV_TEXT_ALIGN_CENTER);
+    lv_draw_rect_dsc_t rect_black_dsc;
+    init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
+    lv_draw_rect_dsc_t rect_white_dsc;
+    init_rect_dsc(&rect_white_dsc, LVGL_FOREGROUND);
+
+    lv_canvas_draw_rect(canvas, 0, 2, 29, 12, &rect_white_dsc);
+    lv_canvas_draw_rect(canvas, 1, 3, 27, 10, &rect_black_dsc);
+    lv_canvas_draw_rect(canvas, 2, 4, (state.battery + 2) / 4, 8, &rect_white_dsc);
+    lv_canvas_draw_rect(canvas, 30, 5, 3, 6, &rect_white_dsc);
+    lv_canvas_draw_rect(canvas, 31, 6, 1, 4, &rect_black_dsc);
+
     lv_draw_label_dsc_t label_dsc;
-    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &font, LV_TEXT_ALIGN_CENTER);
-
-    lv_canvas_draw_img(canvas, 0, 0, &battery, &img_dsc);
-    lv_canvas_draw_rect(canvas, 4, 4, 54 * state.battery / 100, 23, &rect_dsc);
-    lv_canvas_draw_img(canvas, 2, 2, &battery_mask, &img_dsc);
-
-    char text[10] = {};
-    sprintf(text, "%i%%", state.battery);
-
-    const int y = 9;
-    const int w = 62;
-
-    // outline behind the fill so the percentage stays legible over any fill level
-    for (int dx = -1; dx <= 1; dx++) {
-        for (int dy = -1; dy <= 1; dy++) {
-            if (dx != 0 || dy != 0) {
-                lv_canvas_draw_text(canvas, dx, y + dy, w, &outline_dsc, text);
-            }
-        }
-    }
-    lv_canvas_draw_text(canvas, 0, y, w, &label_dsc, text);
+    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_LEFT);
+    char text[8] = {};
+    snprintf(text, sizeof(text), "%i%%", state.battery);
+    lv_canvas_draw_text(canvas, 36, 0, 32, &label_dsc, text);
 
     if (state.charging) {
-        lv_canvas_draw_img(canvas, 29, 37, &bolt, &img_dsc);
+        lv_draw_img_dsc_t img_dsc;
+        lv_draw_img_dsc_init(&img_dsc);
+        lv_canvas_draw_img(canvas, 9, -1, &bolt, &img_dsc);
     }
 
     rotate_canvas(canvas, cbuf);

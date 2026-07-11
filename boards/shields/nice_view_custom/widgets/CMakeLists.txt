@@ -3,9 +3,6 @@ if(CONFIG_ZMK_DISPLAY)
         main_display.c
         battery_status.c
         util.c
-        ../assets/battery.c
-        ../assets/battery_mask.c
         ../assets/bolt.c
-        ../assets/font.c
     )
 endif()
