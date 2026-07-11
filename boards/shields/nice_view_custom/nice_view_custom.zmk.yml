@@ -1,7 +1,8 @@
 file_format: "1"
 id: nice_view_custom
-name: Nice View Custom (Megacopi)
+name: nice!view_custom
 type: shield
-url: https://github.com/Megacopi/zmk-nice-view-megacopi
-requires:
-  - nice_view_config
+url: https://nicekeyboards.com/nice-view
+requires: [nice_view_header]
+features:
+  - display
